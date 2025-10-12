@@ -1,0 +1,365 @@
+/**
+ * ExtraChill Stream - Minimal Layout Styles
+ *
+ * Uses theme CSS variables for all visual styling.
+ * Only defines streaming interface layout structure.
+ */
+
+/* Main Container */
+.ec-stream-container {
+	max-width: 1400px;
+	margin: 0 auto;
+	padding: 20px;
+}
+
+/* Header */
+.ec-stream-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 20px;
+	padding-bottom: 16px;
+	border-bottom: 2px solid var(--border-color);
+}
+
+.ec-stream-header-left {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.ec-stream-title {
+	margin: 0;
+	color: var(--text-color);
+}
+
+.ec-stream-artist-name {
+	margin: 0;
+	color: var(--muted-text);
+}
+
+.ec-stream-artist-select {
+	padding: 8px 12px;
+	border: 1px solid var(--border-color);
+	border-radius: 8px;
+	background: var(--background-color);
+	color: var(--text-color);
+}
+
+/* Status Badge */
+.ec-stream-status-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 16px;
+	border-radius: 20px;
+	font-size: 14px;
+	font-weight: 600;
+	background: var(--card-background);
+	color: var(--text-color);
+}
+
+.ec-stream-status-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--muted-text);
+}
+
+.ec-stream-status-live .ec-stream-status-dot {
+	background: #28a745;
+	animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+	0%, 100% { opacity: 1; }
+	50% { opacity: 0.5; }
+}
+
+/* Three-Column Layout */
+.ec-stream-layout {
+	display: grid;
+	grid-template-columns: 300px 1fr 300px;
+	gap: 20px;
+}
+
+/* Video Container (Full Width) */
+.ec-stream-video-container {
+	position: relative;
+	width: 100%;
+	background: #000;
+	border-radius: 8px;
+	overflow: hidden;
+	aspect-ratio: 16 / 9;
+	margin-bottom: 16px;
+}
+
+.ec-stream-video-container video {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: 8px;
+}
+
+.ec-stream-video-placeholder {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+	text-align: center;
+	padding: 20px;
+	background: #000;
+	border-radius: 8px;
+}
+
+.ec-stream-video-icon {
+	margin-bottom: 16px;
+	opacity: 0.5;
+}
+
+.ec-stream-video-status {
+	font-size: 24px;
+	font-weight: 600;
+	margin: 0 0 8px 0;
+}
+
+.ec-stream-video-hint {
+	font-size: 14px;
+	margin: 0;
+	opacity: 0.7;
+}
+
+.ec-stream-video-stats {
+	display: flex;
+	gap: 16px;
+	font-size: 14px;
+	color: var(--text-color);
+}
+
+.ec-stream-stat-label {
+	opacity: 0.7;
+	margin-right: 4px;
+}
+
+.ec-stream-stat-value {
+	font-weight: 600;
+}
+
+/* Stream Controls */
+.ec-stream-controls {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 16px;
+	background: var(--card-background);
+	border: 1px solid var(--border-color);
+	border-radius: 8px;
+}
+
+.ec-stream-controls-left,
+.ec-stream-controls-right {
+	display: flex;
+	gap: 8px;
+}
+
+/* Button modifiers using theme's button system */
+.ec-stream-btn:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.ec-stream-btn-block {
+	width: 100%;
+	display: block;
+}
+
+/* Cards */
+.ec-stream-card {
+	background: var(--card-background);
+	border: 1px solid var(--border-color);
+	border-radius: 8px;
+	padding: 20px;
+	margin-bottom: 16px;
+	box-shadow: var(--card-shadow);
+}
+
+.ec-stream-card-title {
+	margin: 0 0 16px 0;
+	color: var(--text-color);
+}
+
+.ec-stream-card-subtitle {
+	margin: 0 0 16px 0;
+	color: var(--muted-text);
+	font-size: 14px;
+}
+
+/* Form Elements */
+.ec-stream-form-group {
+	margin-bottom: 16px;
+}
+
+.ec-stream-form-group label {
+	display: block;
+	font-size: 14px;
+	font-weight: 600;
+	margin-bottom: 4px;
+	color: var(--text-color);
+}
+
+.ec-stream-select {
+	width: 100%;
+	padding: 8px 12px;
+	border: 1px solid var(--border-color);
+	border-radius: 8px;
+	background: var(--background-color);
+	color: var(--text-color);
+}
+
+.ec-stream-select:focus {
+	outline: none;
+	border-color: var(--focus-border-color);
+	box-shadow: var(--focus-box-shadow);
+}
+
+.ec-stream-slider {
+	width: 100%;
+	height: 6px;
+	border-radius: 3px;
+	background: var(--border-color);
+}
+
+.ec-stream-slider-labels {
+	display: flex;
+	justify-content: space-between;
+	font-size: 12px;
+	color: var(--muted-text);
+	margin-top: 4px;
+}
+
+/* Platform Cards */
+.ec-stream-platform-cards {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.ec-stream-platform-card {
+	padding: 12px;
+	border: 1px solid var(--border-color);
+	border-radius: 8px;
+	background: var(--card-background);
+}
+
+.ec-stream-platform-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 8px;
+}
+
+.ec-stream-platform-info {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.ec-stream-platform-logo {
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--text-color);
+}
+
+.ec-stream-platform-name {
+	font-weight: 600;
+	color: var(--text-color);
+}
+
+.ec-stream-platform-status {
+	font-size: 12px;
+	font-weight: 600;
+	padding: 4px 8px;
+	border-radius: 12px;
+	background: var(--card-background);
+	color: var(--muted-text);
+}
+
+/* Info List */
+.ec-stream-info-list {
+	list-style: none;
+	padding: 0;
+	margin: 0 0 16px 0;
+}
+
+.ec-stream-info-list li {
+	padding: 4px 0;
+	font-size: 14px;
+	color: var(--text-color);
+}
+
+.ec-stream-info-list li::before {
+	content: "→ ";
+	margin-right: 4px;
+	color: var(--link-color);
+}
+
+.ec-stream-info-note {
+	font-size: 12px;
+	color: var(--muted-text);
+	margin: 0;
+	padding: 8px;
+	background: rgba(0, 0, 0, 0.05);
+	border-radius: 4px;
+}
+
+/* Responsive Mobile */
+@media (max-width: 1200px) {
+	.ec-stream-layout {
+		grid-template-columns: 1fr;
+	}
+
+	.ec-stream-sidebar-left {
+		order: 2;
+	}
+
+	.ec-stream-main {
+		order: 1;
+	}
+
+	.ec-stream-sidebar-right {
+		order: 3;
+	}
+}
+
+@media (max-width: 768px) {
+	.ec-stream-container {
+		padding: 16px;
+	}
+
+	.ec-stream-header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 12px;
+	}
+
+	.ec-stream-controls {
+		flex-direction: column;
+	}
+
+	.ec-stream-controls-left,
+	.ec-stream-controls-right {
+		width: 100%;
+	}
+
+	.ec-stream-btn-block {
+		width: 100%;
+	}
+}
+
+/* Dark mode handled automatically via theme CSS variables */
