@@ -54,7 +54,7 @@ This is intentional - we're building the visual framework first, then adding bac
 
 #### Template Override System
 - **Homepage Override**: Uses `extrachill_template_homepage` filter to replace theme homepage
-- **Domain Detection**: `get_blog_id_from_url('stream.extrachill.com', '/')` for site identification
+- **Site Identification**: Identifies stream.extrachill.com site context
 - **Sticky Header Disabled**: `add_filter('extrachill_enable_sticky_header', '__return_false')`
 
 #### Asset Management (`inc/core/assets.php`)

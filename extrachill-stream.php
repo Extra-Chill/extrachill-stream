@@ -28,6 +28,7 @@ function extrachill_stream_init() {
 	require_once EXTRACHILL_STREAM_PLUGIN_DIR . 'inc/core/authentication.php';
 	require_once EXTRACHILL_STREAM_PLUGIN_DIR . 'inc/core/assets.php';
 	require_once EXTRACHILL_STREAM_PLUGIN_DIR . 'inc/core/http-client.php';
+	require_once EXTRACHILL_STREAM_PLUGIN_DIR . 'inc/core/breadcrumbs.php';
 }
 
 add_filter( 'extrachill_template_homepage', 'ec_stream_override_homepage_template' );

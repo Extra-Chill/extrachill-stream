@@ -14,8 +14,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 get_header();
 
+extrachill_breadcrumbs();
+
 $user_id = get_current_user_id();
-$artist_ids = function_exists( 'ec_get_user_artist_ids' ) ? ec_get_user_artist_ids( $user_id ) : array();
+$artist_ids = function_exists( 'ec_get_artists_for_user' ) ? ec_get_artists_for_user( $user_id ) : array();
 $current_artist_name = ! empty( $artist_ids ) ? get_the_title( $artist_ids[0] ) : 'Artist';
 ?>
 

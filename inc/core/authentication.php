@@ -34,17 +34,8 @@ function ec_stream_require_artist_membership() {
 	}
 
 	$user_id = get_current_user_id();
-	$artist_blog_id = get_blog_id_from_url( 'artist.extrachill.com', '/' );
 
-	if ( ! $artist_blog_id ) {
-		wp_die(
-			'<h1>404 Not Found</h1><p>The page you are looking for does not exist.</p>',
-			'404 Not Found',
-			array( 'response' => 404 )
-		);
-	}
-
-	if ( ! is_user_member_of_blog( $user_id, $artist_blog_id ) ) {
+	if ( ! is_user_member_of_blog( $user_id, 4 ) ) {
 		wp_die(
 			'<h1>404 Not Found</h1><p>The page you are looking for does not exist.</p>',
 			'404 Not Found',

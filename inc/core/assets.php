@@ -18,8 +18,7 @@ add_action( 'wp_enqueue_scripts', 'ec_stream_enqueue_assets' );
  */
 function ec_stream_enqueue_assets() {
 	// Only load on stream site
-	$stream_blog_id = get_blog_id_from_url( 'stream.extrachill.com', '/' );
-	if ( ! $stream_blog_id || get_current_blog_id() !== $stream_blog_id ) {
+	if ( get_current_blog_id() !== 8 ) {
 		return;
 	}
 
@@ -49,12 +48,10 @@ function ec_stream_enqueue_assets() {
 		$user_id = get_current_user_id();
 
 		// Get artist site blog ID
-		$artist_blog_id = get_blog_id_from_url( 'artist.extrachill.com', '/' );
-		$artists        = array();
+		$artists = array();
 
-		if ( $artist_blog_id ) {
-			// Switch to artist site to get artist data
-			switch_to_blog( $artist_blog_id );
+		// Switch to artist site to get artist data
+		switch_to_blog( 4 );
 
 			// Get user's artist profile IDs from global user meta
 			$artist_profile_ids = get_user_meta( $user_id, '_artist_profile_ids', true );
