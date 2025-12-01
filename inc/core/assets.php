@@ -33,16 +33,16 @@ function ec_stream_enqueue_assets() {
 		);
 	}
 
-	// Enqueue JavaScript
-	$js_file = EXTRACHILL_STREAM_PLUGIN_DIR . 'assets/js/stream.js';
-	if ( file_exists( $js_file ) ) {
-		wp_enqueue_script(
-			'extrachill-stream',
-			EXTRACHILL_STREAM_PLUGIN_URL . 'assets/js/stream.js',
-			array( 'jquery' ),
-			filemtime( $js_file ),
-			true
-		);
+		// Enqueue JavaScript
+		$js_file = EXTRACHILL_STREAM_PLUGIN_DIR . 'assets/js/stream.js';
+		if ( file_exists( $js_file ) ) {
+			wp_enqueue_script(
+				'extrachill-stream',
+				EXTRACHILL_STREAM_PLUGIN_URL . 'assets/js/stream.js',
+				array(),
+				filemtime( $js_file ),
+				true
+			);
 
 		// Localize script with user data
 		$user_id = get_current_user_id();
@@ -75,8 +75,8 @@ function ec_stream_enqueue_assets() {
 			'extrachill-stream',
 			'ecStreamData',
 			array(
-				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'nonce'   => wp_create_nonce( 'ec_stream_nonce' ),
+				'restUrl' => rest_url( 'extrachill-stream/v1' ),
+				'nonce'   => wp_create_nonce( 'wp_rest' ),
 				'userId'  => $user_id,
 				'artists' => $artists,
 			)

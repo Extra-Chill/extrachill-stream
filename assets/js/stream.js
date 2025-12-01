@@ -4,7 +4,7 @@
  * Handles video/audio capture and streaming interface interactions.
  */
 
-(function($) {
+(function() {
 	'use strict';
 
 	const StreamUI = {
@@ -32,16 +32,16 @@
 
 		cacheElements: function() {
 			this.elements = {
-				statusBadge: $('#ec-stream-status-badge'),
-				statusText: $('.ec-stream-status-text'),
-				videoContainer: $('#ec-stream-video-container'),
-				videoStats: $('#ec-stream-video-stats'),
-				startBtn: $('#ec-stream-btn-start'),
-				stopBtn: $('#ec-stream-btn-stop'),
-				videoSource: $('#ec-video-source'),
-				audioSource: $('#ec-audio-source'),
-				platformConnectBtns: $('.ec-stream-platform-connect'),
-				artistSelect: $('#ec-stream-artist-select')
+				statusBadge: document.getElementById('ec-stream-status-badge'),
+				statusText: document.querySelector('.ec-stream-status-text'),
+				videoContainer: document.getElementById('ec-stream-video-container'),
+				videoStats: document.getElementById('ec-stream-video-stats'),
+				startBtn: document.getElementById('ec-stream-btn-start'),
+				stopBtn: document.getElementById('ec-stream-btn-stop'),
+				videoSource: document.getElementById('ec-video-source'),
+				audioSource: document.getElementById('ec-audio-source'),
+				platformConnectBtns: document.querySelectorAll('.ec-stream-platform-connect'),
+				artistSelect: document.getElementById('ec-stream-artist-select')
 			};
 		},
 
@@ -53,52 +53,56 @@
 			this.videoElement.playsInline = true;
 			this.videoElement.style.display = 'none';
 
-			this.elements.videoContainer.append(this.videoElement);
+			this.elements.videoContainer.appendChild(this.videoElement);
 		},
 
 		bindEvents: function() {
 			const self = this;
 
 			// Video source change
-			this.elements.videoSource.on('change', function() {
+			this.elements.videoSource.addEventListener('change', function() {
 				if (self.state.isStreaming) {
 					self.restartStream();
 				}
 			});
 
 			// Audio source change
-			this.elements.audioSource.on('change', function() {
+			this.elements.audioSource.addEventListener('change', function() {
 				if (self.state.isStreaming) {
 					self.restartStream();
 				}
 			});
 
 			// Start stream button
-			this.elements.startBtn.on('click', function() {
+			this.elements.startBtn.addEventListener('click', function() {
 				self.startStream();
 			});
 
 			// Stop stream button
-			this.elements.stopBtn.on('click', function() {
+			this.elements.stopBtn.addEventListener('click', function() {
 				self.stopStream();
 			});
 
 			// Platform connect buttons
-			this.elements.platformConnectBtns.on('click', function() {
-				const platform = $(this).data('platform');
-				self.platformConnect(platform, $(this));
+			this.elements.platformConnectBtns.forEach(function(btn) {
+				btn.addEventListener('click', function() {
+					const platform = this.getAttribute('data-platform');
+					self.platformConnect(platform, this);
+				});
 			});
 
-			// Artist select
-			this.elements.artistSelect.on('change', function() {
-				console.log('Artist changed to:', $(this).val());
+		// Artist select (guard for pages without artist selector)
+		if (this.elements.artistSelect) {
+			this.elements.artistSelect.addEventListener('change', function() {
+				console.log('Artist changed to:', this.value);
 			});
+		}
 		},
 
 		startStream: function() {
 			const self = this;
-			const videoSource = this.elements.videoSource.val();
-			const audioSource = this.elements.audioSource.val();
+		const videoSource = this.elements.videoSource.value;
+		const audioSource = this.elements.audioSource.value;
 
 			console.log('Starting stream with video:', videoSource, 'audio:', audioSource);
 
@@ -119,14 +123,13 @@
 
 					// Update UI
 					self.setStatus('live');
-					self.elements.startBtn.hide();
-					self.elements.stopBtn.show();
-					$('.ec-stream-video-placeholder').hide();
+					self.elements.startBtn.style.display = 'none';
+					self.elements.stopBtn.style.display = 'inline-block';
+					document.querySelector('.ec-stream-video-placeholder').style.display = 'none';
 
 					// Start duration counter
 					self.startDurationCounter();
 
-					// TODO: Send stream to backend for multi-platform routing
 					console.log('Stream started - backend integration pending');
 				})
 				.catch(function(error) {
@@ -157,14 +160,14 @@
 
 			// Update UI
 			this.setStatus('offline');
-			this.elements.stopBtn.hide();
-			this.elements.startBtn.show();
-			$('.ec-stream-video-placeholder').show();
+			this.elements.stopBtn.style.display = 'none';
+			this.elements.startBtn.style.display = 'inline-block';
+			document.querySelector('.ec-stream-video-placeholder').style.display = 'flex';
 
 			// Reset stats
-			$('#ec-stream-duration').text('00:00:00');
-			$('#ec-stream-status').text('Ready');
-			$('#ec-stream-viewers').text('0');
+			document.getElementById('ec-stream-duration').textContent = '00:00:00';
+			document.getElementById('ec-stream-status').textContent = 'Ready';
+			document.getElementById('ec-stream-viewers').textContent = '0';
 
 			console.log('Stream stopped');
 		},
@@ -225,11 +228,10 @@
 
 		setStatus: function(status) {
 			// Remove all status classes
-			this.elements.statusBadge
-				.removeClass('ec-stream-status-offline ec-stream-status-connecting ec-stream-status-live');
+			this.elements.statusBadge.classList.remove('ec-stream-status-offline', 'ec-stream-status-connecting', 'ec-stream-status-live');
 
 			// Add new status class
-			this.elements.statusBadge.addClass('ec-stream-status-' + status);
+			this.elements.statusBadge.classList.add('ec-stream-status-' + status);
 
 			// Update status text
 			const statusText = {
@@ -237,7 +239,7 @@
 				connecting: 'Connecting...',
 				live: 'Live'
 			};
-			this.elements.statusText.text(statusText[status] || 'Unknown');
+			this.elements.statusText.textContent = statusText[status] || 'Unknown';
 		},
 
 		startDurationCounter: function() {
@@ -245,14 +247,10 @@
 			this.state.durationInterval = setInterval(function() {
 				const elapsed = Date.now() - self.state.startTime;
 				const duration = self.formatDuration(elapsed);
-				$('#ec-stream-duration').text(duration);
-				$('#ec-stream-status').text('Streaming');
+				document.getElementById('ec-stream-duration').textContent = duration;
+				document.getElementById('ec-stream-status').textContent = 'Streaming';
 
-				// TODO: Replace with real viewer count aggregate from all platforms
-				$('#ec-stream-viewers').text('0');
-
-				// TODO: Replace with real bitrate calculation
-				// $('#ec-stream-current-bitrate').text(realBitrate + ' kbps');
+				document.getElementById('ec-stream-viewers').textContent = '0';
 			}, 1000);
 		},
 
@@ -261,7 +259,7 @@
 				clearInterval(this.state.durationInterval);
 				this.state.durationInterval = null;
 			}
-			$('#ec-stream-duration').text('00:00:00');
+			document.getElementById('ec-stream-duration').textContent = '00:00:00';
 		},
 
 		formatDuration: function(milliseconds) {
@@ -279,11 +277,13 @@
 			console.log('Platform connect clicked:', platform);
 
 			// Show "coming soon" message
-			button.prop('disabled', true).text('Coming Soon');
+			button.disabled = true;
+			button.textContent = 'Coming Soon';
 
 			// Reset after 2 seconds
 			setTimeout(function() {
-				button.prop('disabled', false).text('Connect');
+				button.disabled = false;
+				button.textContent = 'Connect';
 			}, 2000);
 
 			// In the future, this will trigger OAuth flow
@@ -292,8 +292,8 @@
 	};
 
 	// Initialize on document ready
-	$(document).ready(function() {
+	document.addEventListener('DOMContentLoaded', function() {
 		StreamUI.init();
 	});
 
-})(jQuery);
+})();

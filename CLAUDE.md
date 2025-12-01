@@ -180,7 +180,7 @@ state: {
 
 - **Universal Build Script**: Symlinked to `../../.github/build.sh`
 - **Auto-Detection**: Script detects plugin from `Plugin Name:` header
-- **Production Build**: `./build.sh` creates `/build/extrachill-stream/` directory and `/build/extrachill-stream.zip` file
+- **Production Build**: `./build.sh` creates `/build/extrachill-stream.zip` file only (unzip when directory access needed)
 - **File Exclusions**: `.buildignore` excludes development files
 - **Composer Integration**: Development dependencies only
 

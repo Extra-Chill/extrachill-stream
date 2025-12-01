@@ -120,6 +120,10 @@
 	opacity: 0.5;
 }
 
+.ec-stream-video-icon-large {
+	font-size: 100px;
+}
+
 .ec-stream-video-status {
 	font-size: 24px;
 	font-weight: 600;
@@ -174,6 +178,10 @@
 .ec-stream-btn-block {
 	width: 100%;
 	display: block;
+}
+
+.ec-stream-btn-hidden {
+	display: none;
 }
 
 /* Cards */

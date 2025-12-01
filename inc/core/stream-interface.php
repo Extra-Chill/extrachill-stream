@@ -17,7 +17,7 @@ get_header();
 extrachill_breadcrumbs();
 
 $user_id = get_current_user_id();
-$artist_ids = function_exists( 'ec_get_artists_for_user' ) ? ec_get_artists_for_user( $user_id ) : array();
+$artist_ids = ec_get_artists_for_user( $user_id );
 $current_artist_name = ! empty( $artist_ids ) ? get_the_title( $artist_ids[0] ) : 'Artist';
 ?>
 
@@ -78,7 +78,7 @@ $current_artist_name = ! empty( $artist_ids ) ? get_the_title( $artist_ids[0] ) 
 			<div class="ec-stream-video-container" id="ec-stream-video-container">
 				<div class="ec-stream-video-placeholder">
 					<div class="ec-stream-video-icon">
-						<i class="fas fa-video" style="font-size: 100px;"></i>
+						<?php echo ec_icon('video', 'ec-stream-video-icon-large'); ?>
 					</div>
 					<p class="ec-stream-video-status">Stream Offline</p>
 					<p class="ec-stream-video-hint">Configure your settings and select platforms to begin</p>
@@ -96,9 +96,8 @@ $current_artist_name = ! empty( $artist_ids ) ? get_the_title( $artist_ids[0] ) 
 					</button>
 					<button
 						type="button"
-						class="button-danger button-medium ec-stream-btn-stop"
+						class="button-danger button-medium ec-stream-btn-stop ec-stream-btn-hidden"
 						id="ec-stream-btn-stop"
-						style="display: none;"
 					>
 						Stop Stream
 					</button>
@@ -132,7 +131,7 @@ $current_artist_name = ! empty( $artist_ids ) ? get_the_title( $artist_ids[0] ) 
 						<div class="ec-stream-platform-header">
 							<div class="ec-stream-platform-info">
 								<div class="ec-stream-platform-logo">
-									<i class="fab fa-youtube"></i>
+									<?php echo ec_icon('youtube'); ?>
 								</div>
 								<div class="ec-stream-platform-name">YouTube</div>
 							</div>
@@ -149,7 +148,7 @@ $current_artist_name = ! empty( $artist_ids ) ? get_the_title( $artist_ids[0] ) 
 						<div class="ec-stream-platform-header">
 							<div class="ec-stream-platform-info">
 								<div class="ec-stream-platform-logo">
-									<i class="fab fa-facebook"></i>
+									<?php echo ec_icon('facebook'); ?>
 								</div>
 								<div class="ec-stream-platform-name">Facebook Live</div>
 							</div>
@@ -166,7 +165,7 @@ $current_artist_name = ! empty( $artist_ids ) ? get_the_title( $artist_ids[0] ) 
 						<div class="ec-stream-platform-header">
 							<div class="ec-stream-platform-info">
 								<div class="ec-stream-platform-logo">
-									<i class="fab fa-instagram"></i>
+									<?php echo ec_icon('instagram'); ?>
 								</div>
 								<div class="ec-stream-platform-name">Instagram Live</div>
 							</div>
@@ -183,7 +182,7 @@ $current_artist_name = ! empty( $artist_ids ) ? get_the_title( $artist_ids[0] ) 
 						<div class="ec-stream-platform-header">
 							<div class="ec-stream-platform-info">
 								<div class="ec-stream-platform-logo">
-									<i class="fab fa-tiktok"></i>
+									<?php echo ec_icon('tiktok'); ?>
 								</div>
 								<div class="ec-stream-platform-name">TikTok Live</div>
 							</div>
@@ -200,7 +199,7 @@ $current_artist_name = ! empty( $artist_ids ) ? get_the_title( $artist_ids[0] ) 
 						<div class="ec-stream-platform-header">
 							<div class="ec-stream-platform-info">
 								<div class="ec-stream-platform-logo">
-									<i class="fab fa-twitch"></i>
+									<?php echo ec_icon('twitch'); ?>
 								</div>
 								<div class="ec-stream-platform-name">Twitch</div>
 							</div>
