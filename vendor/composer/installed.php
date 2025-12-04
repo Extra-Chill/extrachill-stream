@@ -3,7 +3,7 @@
         'name' => 'extrachill/extrachill-stream',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '105eb18983899cc3fad24672159d2fb1885fc3bd',
+        'reference' => '37df8bbbdeb49ea20e2197eb0163e676fd2b6f04',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -22,7 +22,7 @@
         'extrachill/extrachill-stream' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '105eb18983899cc3fad24672159d2fb1885fc3bd',
+            'reference' => '37df8bbbdeb49ea20e2197eb0163e676fd2b6f04',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

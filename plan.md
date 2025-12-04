@@ -101,7 +101,7 @@ extrachill-stream/
 ├── build.sh -> ../../.github/build.sh  # Symlink to universal build script
 ├── .buildignore                    # Build exclusions
 ├── composer.json                   # Dev dependencies only
-├── CLAUDE.md                       # Implementation documentation
+├── AGENTS.md                       # Implementation documentation
 └── plan.md                         # This planning document
 ```
 
@@ -1828,7 +1828,7 @@ Response: { balance: 47.70, formatted: "$47.70", minutes: 477 }
 - **Troubleshooting**: Common issues and solutions
 
 ### Developer Documentation
-- **CLAUDE.md**: Comprehensive plugin architecture documentation
+- **AGENTS.md**: Comprehensive plugin architecture documentation
 - **API Documentation**: REST API endpoints with request/response examples
 - **Database Schema**: Table structures and relationships
 - **Integration Guide**: How to integrate streaming with other plugins

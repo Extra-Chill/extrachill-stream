@@ -51,7 +51,8 @@ function ec_stream_enqueue_assets() {
 		$artists = array();
 
 		// Switch to artist site to get artist data
-		switch_to_blog( 4 );
+		try {
+			switch_to_blog( 4 );
 
 			// Get user's artist profile IDs from global user meta
 			$artist_profile_ids = get_user_meta( $user_id, '_artist_profile_ids', true );
@@ -67,7 +68,7 @@ function ec_stream_enqueue_assets() {
 					}
 				}
 			}
-
+		} finally {
 			restore_current_blog();
 		}
 

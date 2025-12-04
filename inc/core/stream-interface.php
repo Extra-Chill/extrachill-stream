@@ -2,8 +2,8 @@
 /**
  * Streaming Interface Template
  *
- * Main streaming interface for artist platform members.
- * Non-functional UI - backend integrations to be added later.
+ * Homepage content for stream.extrachill.com.
+ * Hooked via extrachill_homepage_content action.
  *
  * @package ExtraChillStream
  */
@@ -11,8 +11,6 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
-get_header();
 
 extrachill_breadcrumbs();
 
@@ -216,5 +214,3 @@ $current_artist_name = ! empty( $artist_ids ) ? get_the_title( $artist_ids[0] ) 
 		</div>
 	</div>
 </div>
-
-<?php get_footer(); ?>

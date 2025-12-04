@@ -5,7 +5,7 @@ WordPress plugin providing live streaming platform for artist platform members. 
 ## Plugin Information
 
 - **Name**: Extra Chill Stream
-- **Version**: 1.0.0
+- **Version**: 0.1.1
 - **Text Domain**: `extrachill-stream`
 - **Author**: Chris Huber
 - **Author URI**: https://chubes.net
@@ -82,7 +82,7 @@ extrachill-stream/
 ├── build.sh -> ../../.github/build.sh  # Symlink to universal build script
 ├── .buildignore                   # Build exclusion patterns
 ├── composer.json                  # Dev dependencies
-└── CLAUDE.md                      # This documentation
+└── AGENTS.md                      # This documentation
 ```
 
 ## Streaming Interface UI

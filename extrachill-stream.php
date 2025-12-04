@@ -3,7 +3,7 @@
  * Plugin Name: Extra Chill Stream
  * Plugin URI: https://extrachill.com
  * Description: Live streaming platform for artist platform members
- * Version: 0.1.0
+ * Version: 0.1.1
  * Author: Chris Huber
  * Author URI: https://chubes.net
  * Requires at least: 5.0
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'EXTRACHILL_STREAM_VERSION', '0.1.0' );
+define( 'EXTRACHILL_STREAM_VERSION', '0.1.1' );
 define( 'EXTRACHILL_STREAM_PLUGIN_FILE', __FILE__ );
 define( 'EXTRACHILL_STREAM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'EXTRACHILL_STREAM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -31,10 +31,10 @@ function extrachill_stream_init() {
 	require_once EXTRACHILL_STREAM_PLUGIN_DIR . 'inc/core/breadcrumbs.php';
 }
 
-add_filter( 'extrachill_template_homepage', 'ec_stream_override_homepage_template' );
+add_action( 'extrachill_homepage_content', 'ec_stream_render_homepage' );
 
-function ec_stream_override_homepage_template( $template ) {
-	return EXTRACHILL_STREAM_PLUGIN_DIR . 'inc/core/stream-interface.php';
+function ec_stream_render_homepage() {
+	include EXTRACHILL_STREAM_PLUGIN_DIR . 'inc/core/stream-interface.php';
 }
 
 add_filter( 'extrachill_enable_sticky_header', '__return_false' );

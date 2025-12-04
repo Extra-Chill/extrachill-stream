@@ -110,7 +110,7 @@ extrachill-stream/
 ├── build.sh -> ../../.github/build.sh  # Universal build script
 ├── .buildignore                    # Build exclusion patterns
 ├── composer.json                   # Development dependencies
-├── CLAUDE.md                       # Comprehensive technical documentation
+├── AGENTS.md                       # Comprehensive technical documentation
 ├── plan.md                         # Future implementation planning
 └── README.md                       # This file
 ```
@@ -202,7 +202,7 @@ GPL v2 or later
 
 ## Documentation
 
-- **CLAUDE.md** - Comprehensive technical documentation for developers
+- **AGENTS.md** - Comprehensive technical documentation for developers
 - **plan.md** - Detailed future implementation roadmap
 
 ## Support
