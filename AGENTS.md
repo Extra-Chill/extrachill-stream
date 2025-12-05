@@ -2,6 +2,8 @@
 
 WordPress plugin providing live streaming platform for artist platform members. Currently in Phase 1: Non-functional UI phase with visual interface complete. Backend streaming integrations to be added platform-by-platform in future phases.
 
+This plugin is part of the Extra Chill Platform, a WordPress multisite network serving music communities across 8 active sites.
+
 ## Plugin Information
 
 - **Name**: Extra Chill Stream
@@ -41,27 +43,33 @@ This is intentional - we're building the visual framework first, then adding bac
 ### Plugin Loading Pattern
 - **Procedural WordPress Pattern**: Uses direct `require_once` includes for all plugin functionality
 - **Site-Activated Plugin**: Activated only on stream.extrachill.com site
-- **Artist-Only Access**: Requires artist platform membership via `ec_get_user_artist_ids()`
-- **Template Override System**: Replaces theme homepage via `extrachill_template_homepage` filter
+- **Artist-Only Access**: Requires artist platform membership via `is_user_member_of_blog()` against blog ID 4 (artist.extrachill.com)
+- **Homepage Rendering**: Outputs UI via `extrachill_homepage_content` action and disables sticky header with `add_filter( 'extrachill_enable_sticky_header', '__return_false' )`
 
 ### Core Features
 
 #### Authentication System (`inc/core/authentication.php`)
 - **404 for Non-Members**: Uses `wp_die()` with 404 status for unauthenticated access
-- **Artist Validation**: Uses `ec_get_user_artist_ids()` from artist platform plugin
+- **Artist Validation**: Uses WordPress core `is_user_member_of_blog()` against artist site (blog ID 4)
 - **Early Hook**: `template_redirect` at priority 5 for immediate authentication check
 - **Network-Wide Access**: Any logged-in artist platform member from any multisite site can access
 
-#### Template Override System
-- **Homepage Override**: Uses `extrachill_template_homepage` filter to replace theme homepage
-- **Site Identification**: Identifies stream.extrachill.com site context
-- **Sticky Header Disabled**: `add_filter('extrachill_enable_sticky_header', '__return_false')`
+#### Homepage Rendering
+- **Homepage Injection**: Uses `extrachill_homepage_content` action to output UI inside the theme layout
+- **Sticky Header Disabled**: Filter `extrachill_enable_sticky_header` returns false for a distraction-free layout
+- **Breadcrumbs Integration**: `inc/core/breadcrumbs.php` customizes theme breadcrumbs to show “Extra Chill → Stream”
 
 #### Asset Management (`inc/core/assets.php`)
-- **Conditional Loading**: Assets load only on stream site pages
+- **Conditional Loading**: Assets load only on stream site pages (blog ID 8)
 - **Cache Busting**: `filemtime()` versioning for CSS/JS
-- **jQuery Dependency**: JavaScript requires jQuery
-- **Localized Data**: Artist information, AJAX URL, and nonces passed to JavaScript
+- **Vanilla JavaScript**: Single `stream.js` module with no jQuery dependency
+- **Localized Data**: Artist list pulled via `switch_to_blog( 4 )` and passed to JS via `wp_localize_script()`
+- **Camera Preview Support**: JavaScript receives artist context plus REST base URL/nonce for future integrations
+
+#### REST API Placeholder (`inc/core/rest-api.php`)
+- **Status Endpoint**: Registers `extrachill-stream/v1/status` route returning canned response
+- **Permissions**: Uses `is_user_member_of_blog()` to keep the endpoint limited to artist members
+- **Future Expansion**: File exists to extend once backend streaming/billing APIs are ready
 
 ## File Structure
 
@@ -69,23 +77,27 @@ This is intentional - we're building the visual framework first, then adding bac
 extrachill-stream/
 ├── extrachill-stream.php           # Main plugin file
 ├── inc/
-│   ├── core/
-│   │   ├── authentication.php      # Member-only access validation
-│   │   └── assets.php             # CSS/JS enqueuing
-│   └── templates/
-│       └── stream-interface.php   # Main streaming interface template
+│   └── core/
+│       ├── authentication.php      # Member-only access validation
+│       ├── assets.php              # CSS/JS enqueuing + localization
+│       ├── rest-api.php            # Placeholder REST route(s)
+│       ├── breadcrumbs.php         # Breadcrumb overrides
+│       └── stream-interface.php    # Main streaming interface template
 ├── assets/
 │   ├── css/
-│   │   └── stream.css            # Streaming interface styles
+│   │   └── stream.css             # Streaming interface styles
 │   └── js/
-│       └── stream.js             # UI interactions (non-functional)
+│       └── stream.js              # Vanilla JS UI + media preview
+├── docs/
+│   └── CHANGELOG.md
+├── plan.md
 ├── build.sh -> ../../.github/build.sh  # Symlink to universal build script
 ├── .buildignore                   # Build exclusion patterns
 ├── composer.json                  # Dev dependencies
 └── AGENTS.md                      # This documentation
 ```
 
-## Streaming Interface UI
+## Streaming Interface UI & JavaScript
 
 ### Header Section
 - Page title: "Live Stream Studio"
@@ -94,8 +106,9 @@ extrachill-stream/
 
 ### Video Preview Section
 - 16:9 aspect ratio video container
-- Placeholder with "Stream Offline" message
-- Stream stats overlay (viewers, duration, bitrate) - shows when "live"
+- Placeholder with "Stream Offline" message until camera preview starts
+- Local-only camera/screen preview powered by `navigator.mediaDevices.getUserMedia`
+- Stream stats overlay (viewers, duration, status) driven entirely by UI state
 
 ### Stream Setup Section (Left Sidebar)
 - Video source dropdown (Camera, Screen Share, Browser Tab)
@@ -111,20 +124,22 @@ Platform cards with connection status:
 - **YouTube**: Logo, status, connect button
 - **Facebook Live**: Logo, status, connect button
 - **TikTok Live**: Logo, status, connect button
+- **Instagram Live**: Logo, status, connect button
 
-Each shows: Connected/Disconnected status, "Connect" button (disabled in Phase 1)
+Each card toggles between placeholder Connected/Disconnected labels but never performs OAuth or saved state writes in Phase 1.
 
 ### Stream Controls Section (Bottom)
 - Large "Start Stream" button
 - "Stop Stream" button (hidden initially)
 - Settings button (placeholder)
 - Platform selection (which platforms to stream to)
+- Duration/Status counters that update purely on the client
 
 ### Info Section
 - Getting started tips
 - System requirements
 - Platform documentation links
-- Alpha testing phase notice
+- Alpha testing phase notice (UI-only state)
 
 ## CSS Architecture
 
@@ -146,35 +161,42 @@ Uses ExtraChill theme custom properties:
 - Stream control buttons
 - Status indicators
 
+**Theme Alignment**:
+- Relies entirely on theme-provided CSS variables/root styles
+- No custom template directories; template renders inside default theme homepage shell
+- Styles focus on layout/spacing only, no bespoke animations beyond simple state changes
+
 ## JavaScript Architecture
 
-**Module Pattern**: Self-contained IIFE with jQuery
+**Module Pattern**: Self-contained vanilla JS module initialized on `DOMContentLoaded`
 
 **State Management**:
 ```javascript
 state: {
     isStreaming: false,
-    platforms: { twitch: false, youtube: false, ... },
+    stream: null,
+    platforms: { twitch: false, youtube: false, facebook: false, tiktok: false },
     startTime: null,
     durationInterval: null
 }
 ```
 
 **UI Interactions**:
-- Video/audio source selection (visual feedback)
-- Quality settings changes
-- Bitrate slider with live value display
-- Platform checkbox selection
-- Start/Stop stream buttons (state changes only)
-- Platform connect buttons (show "coming soon")
+- Video/audio source selection triggers local preview restart when already “live”
+- Start/Stop stream buttons request camera/microphone access or tear down preview
+- Platform connect buttons show placeholder “Coming Soon” feedback
+- Artist selector (when present) only logs selection for future integration
 
 **Visual States**:
-- Offline → Connecting → Live transitions
-- Show/hide controls based on state
-- Duration counter simulation
-- Viewer count simulation (random 1-50)
+- Offline → Connecting → Live transitions entirely in CSS/JS state
+- Duration counter and viewer numbers update locally (no randomization logic left)
+- Status badge + stats modules toggle purely via DOM manipulation
 
-**No Backend Calls**: All interactions are visual only, no AJAX requests
+**Media Handling**:
+- Uses `navigator.mediaDevices.getUserMedia()` for camera/screen capture preview
+- Stops all media tracks when user hits Stop to release devices
+
+**No Backend Calls**: All interactions are visual only, and REST endpoints are placeholders for future work
 
 ## Build System
 
@@ -187,10 +209,10 @@ state: {
 ## Dependencies
 
 ### Required Plugins
-- **extrachill-artist-platform** - Provides `ec_get_user_artist_ids()` for member validation (enforced via WordPress native plugin dependency system)
+- **extrachill-artist-platform** - Provides artist membership data stored against blog ID 4
 
 ### Required Theme
-- **extrachill** - Provides `extrachill_template_homepage` filter and CSS custom properties
+- **extrachill** - Provides `extrachill_homepage_content` action, breadcrumb filters, and CSS custom properties
 
 ### WordPress Requirements
 - WordPress 5.0+ multisite installation
@@ -337,7 +359,7 @@ Future phases will need:
 - Verify plugin is site-activated on stream.extrachill.com
 - Check extrachill-artist-platform plugin is active
 - Verify user has artist platform membership
-- Check template override filter is registered
+- Confirm `extrachill_homepage_content` action runs on theme homepage
 
 ### 404 Error When Logged In
 - Verify user has artist profile via `ec_get_user_artist_ids()`

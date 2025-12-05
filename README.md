@@ -27,39 +27,42 @@ This is intentional - we're building the visual framework first, then adding bac
 
 ## Features (Phase 1)
 
-- **Artist-Only Access**: Requires artist platform membership via `ec_get_user_artist_ids()`
-- **Complete UI Framework**: Professional streaming interface ready for backend implementation
-- **Platform Selection**: UI for selecting multiple streaming destinations
-- **Quality Settings**: Resolution, frame rate, and bitrate controls
-- **Video Preview**: 16:9 aspect ratio container with status overlays
-- **Stream Controls**: Start/stop buttons with state management
-- **Responsive Design**: Mobile-friendly interface
+- **Artist-Only Access**: Requires artist platform membership verified with `is_user_member_of_blog()` against artist.extrachill.com (blog ID 4)
+- **Homepage Rendering**: Interface renders via `extrachill_homepage_content` action on stream.extrachill.com and disables the sticky header for a focused layout
+- **Breadcrumb Integration**: Custom breadcrumb root/trail ensures “Extra Chill → Stream” navigation context
+- **Camera Preview UI**: Start/Stop controls trigger local `getUserMedia` preview only (no streaming backend)
+- **Platform Cards**: Twitch/YouTube/Facebook/Instagram/TikTok buttons exist as placeholders with Coming Soon messaging
+- **Responsive Layout**: Two-column HQ UI driven entirely by theme CSS variables
 
 ## Requirements
 
 - WordPress 5.0+ multisite installation
 - PHP 7.4+
-- [extrachill-artist-platform](https://github.com/Extra-Chill/extrachill-artist-platform) plugin (provides member validation)
-- [extrachill](https://github.com/Extra-Chill/extrachill) theme
+- [extrachill-artist-platform](https://github.com/Extra-Chill/extrachill-artist-platform) plugin (provides artist membership data)
+- [extrachill](https://github.com/Extra-Chill/extrachill) theme (exposes homepage action + breadcrumbs)
 
 ## Installation
 
 1. Upload the `extrachill-stream` folder to `/wp-content/plugins/`
 2. Activate on stream.extrachill.com site (site-activate, NOT network-activate)
-3. Ensure extrachill-artist-platform plugin is active
-4. Verify extrachill theme is active on stream site
+3. Ensure extrachill-artist-platform plugin is active (artist membership required)
+4. Verify extrachill theme is active on stream site (action/breadcrumb hooks must exist)
 
 ## Architecture
 
 ### Current Implementation (Phase 1)
 
-- **Site-Activated Plugin**: Activated only on stream.extrachill.com
-- **Artist Member Validation**: Uses `ec_get_user_artist_ids()` for access control
-- **Template Override**: Replaces theme homepage via `extrachill_template_homepage` filter
-- **Non-Functional UI**: Complete visual interface with placeholder interactions
-- **State Management**: JavaScript handles UI state changes without backend calls
+- **Site-Activated Plugin**: Activated only on stream.extrachill.com (blog ID 8)
+- **Authentication Gate**: `inc/core/authentication.php` checks `is_user_member_of_blog()` for artist site membership and returns 404 for others
+- **Homepage Rendering**: `extrachill_homepage_content` action includes `inc/core/stream-interface.php` inside the theme shell while `extrachill_enable_sticky_header` filter disables the sticky header
+- **Breadcrumb Integration**: `inc/core/breadcrumbs.php` customizes the breadcrumb root/trail/back link to match Stream branding
+- **Asset Loading**: `inc/core/assets.php` conditionally enqueues CSS/JS on blog ID 8, switches to blog ID 4 to load artist data, and localizes it for vanilla JS
+- **REST Placeholder**: `inc/core/rest-api.php` registers a stub `/status` route used only as a future extension point
+- **UI State Machine**: `assets/js/stream.js` manages camera preview via `getUserMedia`, Start/Stop buttons, and placeholder platform interactions with no backend calls
 
-### Future Architecture (Phase 2+)
+### Future Phases
+
+The sections below outline the planned architecture for full streaming support (not implemented yet).
 
 **Two-Server Infrastructure**:
 - **WordPress Server**: User interface, configuration management, billing
@@ -84,10 +87,11 @@ Artist (OBS) → RTMP stream → nginx-rtmp VPS → Multiple platforms
 # Install dependencies
 composer install
 
-# Run tests
-composer test
+# Run lint/test suites
+composer run lint:php
+composer run test
 
-# Create production build
+# Create production build (zip only)
 ./build.sh
 ```
 
@@ -97,21 +101,23 @@ composer test
 extrachill-stream/
 ├── extrachill-stream.php           # Main plugin file
 ├── inc/
-│   ├── core/
-│   │   ├── authentication.php      # Artist member validation (404 for non-members)
-│   │   └── assets.php              # CSS/JS enqueuing with conditional loading
-│   └── templates/
+│   └── core/
+│       ├── authentication.php      # Artist member validation (404 for non-members)
+│       ├── assets.php              # CSS/JS enqueuing + localization
+│       ├── rest-api.php            # Placeholder REST route(s)
+│       ├── breadcrumbs.php         # Breadcrumb overrides
 │       └── stream-interface.php    # Main streaming interface template
 ├── assets/
 │   ├── css/
 │   │   └── stream.css              # Streaming interface styles (Phase 1 UI)
 │   └── js/
-│       └── stream.js               # UI interactions (non-functional, visual only)
+│       └── stream.js               # Vanilla JS UI + local preview
+├── docs/
+│   └── CHANGELOG.md
+├── plan.md                         # Future implementation planning
 ├── build.sh -> ../../.github/build.sh  # Universal build script
 ├── .buildignore                    # Build exclusion patterns
 ├── composer.json                   # Development dependencies
-├── AGENTS.md                       # Comprehensive technical documentation
-├── plan.md                         # Future implementation planning
 └── README.md                       # This file
 ```
 

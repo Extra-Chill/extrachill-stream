@@ -6,7 +6,16 @@
 **Architecture**: WordPress UI + nginx-rtmp VPS relay + HTTP client standardization
 **Monetization**: Metered billing (pay-per-minute streaming via shop.extrachill.com WooCommerce)
 
-**IMPORTANT**: This document describes the planned full implementation. The plugin currently has only a non-functional UI (Phase 1). All backend integrations, streaming functionality, and billing systems described below are not yet implemented.
+**CURRENT DELIVERY (Phase 1)**
+- Authentication gate ensures only artist.extrachill.com members (blog ID 4) or admins reach the page
+- Homepage rendering occurs via `extrachill_homepage_content` action with sticky header disabled
+- Breadcrumb overrides keep navigation rooted at “Extra Chill → Stream”
+- Assets enqueue only on blog ID 8 and localize artist data pulled by switching to blog ID 4
+- UI renders a complete streaming studio with camera/screen preview powered by `getUserMedia`
+- JavaScript runs entirely in the browser with placeholder platform buttons and REST API skeleton (`inc/core/rest-api.php`)
+- No backend streaming, database schema, billing, or provider integrations exist yet
+
+**IMPORTANT**: Everything described beyond this Phase 1 summary is planned work. Backend integrations, streaming functionality, billing, and infrastructure outlined below remain future scope.
 
 ## Project Overview
 
@@ -1528,32 +1537,29 @@ Response: { balance: 47.70, formatted: "$47.70", minutes: 477 }
 
 ## Implementation Phases
 
-### Phase 1: MVP Core Functionality (Weeks 1-3) ✅ COMPLETED
+### Phase 1: MVP Core Functionality (Weeks 1-3) ✅ COMPLETED (UI ONLY)
 
-**Week 1: Foundation** ✅
+**What Exists Today**
 - [x] Plugin structure and file organization
-- [x] Custom post type registration (Livestreams)
-- [x] Database table creation (sessions, billing)
-- [x] Stream key generation system
-- [x] Basic authentication and multisite integration
-- [x] Homepage template override
-- [x] HTTP client implementation (standardized API interactions)
-- [x] UI template creation and simplification (removed manual quality settings)
-- [x] Frontend video/audio capture (getUserMedia API integration)
+- [x] Basic authentication and multisite integration (`is_user_member_of_blog` check)
+- [x] Homepage rendering via `extrachill_homepage_content` + sticky header filter
+- [x] Breadcrumb overrides for Stream pages
+- [x] Conditional asset loading + artist localization
+- [x] UI template creation (stream-interface.php) with vanilla JS + `getUserMedia` preview
 
-**Week 2: VPS Integration** 🔄 CURRENT
+**Not Yet Implemented (Moved to Future Phases)**
+- [ ] Custom post type registration (Livestreams)
+- [ ] Database table creation (sessions, billing)
+- [ ] Stream key generation system
+- [ ] HTTP client implementation
+
+**Week 2+: VPS & Backend (Future)**
 - [ ] nginx-rtmp VPS setup and configuration
 - [ ] Basic nginx config generator
 - [ ] SSH deployment system (phpseclib)
 - [ ] REST API endpoints (stream start/stop)
 - [ ] nginx callback testing
-
-**Week 3: Dashboard UI**
-- [ ] Main dashboard template
-- [ ] Stream status widget
-- [ ] Quick start interface
-- [ ] OBS configuration display
-- [ ] Basic CSS styling
+- [ ] Dashboard templates/widgets beyond current homepage UI
 
 ### Phase 2: Billing System (Weeks 4-5)
 
