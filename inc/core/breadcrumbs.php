@@ -24,18 +24,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.0.0
  */
 function ec_stream_breadcrumb_root( $root_link ) {
-	// Only apply on stream.extrachill.com (blog ID 8)
-	if ( get_current_blog_id() !== 8 ) {
-		return $root_link;
-	}
-
-	// On homepage, just "Extra Chill" (trail will add "Stream")
 	if ( is_front_page() ) {
-		return '<a href="https://extrachill.com">Extra Chill</a>';
+		$main_site_url = ec_get_site_url( 'main' );
+		return '<a href="' . esc_url( $main_site_url ) . '">Extra Chill</a>';
 	}
 
-	// On other pages, include "Stream" in root
-	return '<a href="https://extrachill.com">Extra Chill</a> › <a href="' . esc_url( home_url() ) . '">Stream</a>';
+	$main_site_url = ec_get_site_url( 'main' );
+	return '<a href="' . esc_url( $main_site_url ) . '">Extra Chill</a> › <a href="' . esc_url( home_url() ) . '">Stream</a>';
 }
 add_filter( 'extrachill_breadcrumbs_root', 'ec_stream_breadcrumb_root' );
 
@@ -49,14 +44,8 @@ add_filter( 'extrachill_breadcrumbs_root', 'ec_stream_breadcrumb_root' );
  * @since 1.0.0
  */
 function ec_stream_breadcrumb_trail_homepage( $custom_trail ) {
-	// Only apply on stream.extrachill.com (blog ID 8)
-	if ( get_current_blog_id() !== 8 ) {
-		return $custom_trail;
-	}
-
-	// Only on front page (homepage)
 	if ( is_front_page() ) {
-		return '<span>Stream</span>';
+		return '<span class="network-dropdown-target">Stream</span>';
 	}
 
 	return $custom_trail;
@@ -76,16 +65,11 @@ add_filter( 'extrachill_breadcrumbs_override_trail', 'ec_stream_breadcrumb_trail
  * @since 1.0.0
  */
 function ec_stream_back_to_home_label( $label, $url ) {
-	// Only apply on stream.extrachill.com (blog ID 8)
-	if ( get_current_blog_id() !== 8 ) {
-		return $label;
-	}
-
-	// Don't override on homepage (homepage should say "Back to Extra Chill")
 	if ( is_front_page() ) {
 		return $label;
 	}
 
-	return '← Back to Stream';
+	return '�0 Back to Stream';
 }
 add_filter( 'extrachill_back_to_home_label', 'ec_stream_back_to_home_label', 10, 2 );
+

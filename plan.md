@@ -303,12 +303,12 @@ rtmp {
             record off;  # CRITICAL: Zero data storage
 
             # WordPress callbacks (REST API endpoints)
-            on_publish http://stream.extrachill.com/wp-json/extrachill-stream/v1/stream-start;
-            on_publish_done http://stream.extrachill.com/wp-json/extrachill-stream/v1/stream-stop;
-            on_update http://stream.extrachill.com/wp-json/extrachill-stream/v1/stream-heartbeat;
+            on_publish http://stream.extrachill.com/wp-json/extrachill/v1/stream/start;
+            on_publish_done http://stream.extrachill.com/wp-json/extrachill/v1/stream/stop;
+            on_update http://stream.extrachill.com/wp-json/extrachill/v1/stream/heartbeat;
 
             # Authentication callback
-            on_play http://stream.extrachill.com/wp-json/extrachill-stream/v1/stream-auth;
+            on_play http://stream.extrachill.com/wp-json/extrachill/v1/stream/auth;
 
             # Multi-platform destinations (dynamically generated per user)
             # Example for user with stream key abc123:
@@ -334,8 +334,8 @@ application live_abc123xyz {
     live on;
     record off;
 
-    on_publish http://stream.extrachill.com/wp-json/extrachill-stream/v1/stream-start?key=abc123xyz;
-    on_publish_done http://stream.extrachill.com/wp-json/extrachill-stream/v1/stream-stop?key=abc123xyz;
+    on_publish http://stream.extrachill.com/wp-json/extrachill/v1/stream/start?key=abc123xyz;
+    on_publish_done http://stream.extrachill.com/wp-json/extrachill/v1/stream/stop?key=abc123xyz;
 
     push rtmp://a.rtmp.youtube.com/live2/YOUTUBE_KEY_FOR_USER;
     push rtmp://live.twitch.tv/app/TWITCH_KEY_FOR_USER;
@@ -673,7 +673,7 @@ function ec_stream_product_panel() {
 
 **Stream Start** (`inc/api/stream-start.php`):
 ```php
-// REST API endpoint: /wp-json/extrachill-stream/v1/stream-start
+// REST API endpoint: /wp-json/extrachill/v1/stream/start
 function ec_stream_handle_start( $request ) {
     $stream_key = sanitize_text_field( wp_unslash( $request->get_param( 'name' ) ) );
 
@@ -711,7 +711,7 @@ function ec_stream_handle_start( $request ) {
 
 **Stream Stop** (`inc/api/stream-stop.php`):
 ```php
-// REST API endpoint: /wp-json/extrachill-stream/v1/stream-stop
+// REST API endpoint: /wp-json/extrachill/v1/stream/stop
 function ec_stream_handle_stop( $request ) {
     $stream_key = sanitize_text_field( wp_unslash( $request->get_param( 'name' ) ) );
 
@@ -1387,61 +1387,14 @@ $sessions = $wpdb->get_results( $wpdb->prepare(
 
 **1. Stream Start**
 ```
-POST /wp-json/extrachill-stream/v1/stream-start
-Parameters: name (stream key)
-Response: { success: true, session_id: 123 }
-```
-
-**2. Stream Stop**
-```
-POST /wp-json/extrachill-stream/v1/stream-stop
-Parameters: name (stream key)
-Response: { success: true, cost: 4.50, duration: 45, balance: 42.50 }
-```
-
-**3. Stream Auth**
-```
-POST /wp-json/extrachill-stream/v1/stream-auth
-Parameters: name (stream key)
-Response: { allowed: true } or { allowed: false, reason: "Insufficient balance" }
-```
-
-**4. Stream Heartbeat** (optional - for health monitoring)
-```
-POST /wp-json/extrachill-stream/v1/stream-heartbeat
-Parameters: name (stream key)
-Response: { alive: true, duration: 23 }
-```
-
-### Authenticated Endpoints (AJAX)
-
-**5. Save Destinations**
-```
-POST /wp-json/extrachill-stream/v1/destinations/save
-Authentication: WordPress cookie
-Nonce: X-WP-Nonce header
-Body: { destinations: { youtube: { enabled: true, stream_key: "abc" } } }
-Response: { success: true, message: "Destinations saved" }
-```
-
-**6. Get Stream Status**
-```
-GET /wp-json/extrachill-stream/v1/status
-Authentication: WordPress cookie
-Response: { is_live: true, session_id: 123, duration: 23, cost: 2.30 }
-```
-
-**7. Force Stop Stream**
-```
-POST /wp-json/extrachill-stream/v1/force-stop
-Authentication: WordPress cookie
-Nonce: X-WP-Nonce header
-Response: { success: true, cost: 4.50 }
-```
-
-**8. Get Wallet Balance**
-```
-GET /wp-json/extrachill-stream/v1/wallet/balance
+POST /wp-json/extrachill/v1/stream/start
+POST /wp-json/extrachill/v1/stream/stop
+POST /wp-json/extrachill/v1/stream/auth
+POST /wp-json/extrachill/v1/stream/heartbeat
+POST /wp-json/extrachill/v1/stream/destinations/save
+GET /wp-json/extrachill/v1/stream/status
+POST /wp-json/extrachill/v1/stream/force-stop
+GET /wp-json/extrachill/v1/stream/wallet/balance
 Authentication: WordPress cookie
 Response: { balance: 47.70, formatted: "$47.70", minutes: 477 }
 ```
@@ -1820,7 +1773,7 @@ Response: { balance: 47.70, formatted: "$47.70", minutes: 477 }
 
 ### Build System
 - **Universal Build Script**: Symlink to `../../.github/build.sh`
-- **Production Build**: `./build.sh` creates `/build/extrachill-stream/` and `/build/extrachill-stream.zip`
+- **Production Build**: `./build.sh` creates `/build/extrachill-stream.zip` (the intermediate build directory is temporary; unzip when directory access is needed)
 - **File Exclusions**: `.buildignore` excludes dev files, tests, git, node_modules
 - **Composer**: Development dependencies only (PHPUnit, PHPCS, phpseclib)
 

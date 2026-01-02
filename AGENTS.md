@@ -2,7 +2,7 @@
 
 WordPress plugin providing live streaming platform for artist platform members. Currently in Phase 1: Non-functional UI phase with visual interface complete. Backend streaming integrations to be added platform-by-platform in future phases.
 
-This plugin is part of the Extra Chill Platform, a WordPress multisite network serving music communities across 8 active sites.
+This plugin is part of the Extra Chill Platform, a WordPress multisite network serving music communities across 10 active sites.
 
 ## Plugin Information
 
@@ -44,7 +44,7 @@ This is intentional - we're building the visual framework first, then adding bac
 - **Procedural WordPress Pattern**: Uses direct `require_once` includes for all plugin functionality
 - **Site-Activated Plugin**: Activated only on stream.extrachill.com site
 - **Artist-Only Access**: Requires artist platform membership via `is_user_member_of_blog()` against blog ID 4 (artist.extrachill.com)
-- **Homepage Rendering**: Outputs UI via `extrachill_homepage_content` action and disables sticky header with `add_filter( 'extrachill_enable_sticky_header', '__return_false' )`
+- **Homepage Rendering**: Outputs UI via `extrachill_homepage_content` action hook and disables sticky header with `add_filter( 'extrachill_enable_sticky_header', '__return_false' )`
 
 ### Core Features
 
@@ -67,7 +67,7 @@ This is intentional - we're building the visual framework first, then adding bac
 - **Camera Preview Support**: JavaScript receives artist context plus REST base URL/nonce for future integrations
 
 #### REST API Placeholder (`inc/core/rest-api.php`)
-- **Status Endpoint**: Registers `extrachill-stream/v1/status` route returning canned response
+- **Status Endpoint**: Registered as `extrachill/v1/stream/status` (via extrachill-api) returning canned response
 - **Permissions**: Uses `is_user_member_of_blog()` to keep the endpoint limited to artist members
 - **Future Expansion**: File exists to extend once backend streaming/billing APIs are ready
 
@@ -202,7 +202,7 @@ state: {
 
 - **Universal Build Script**: Symlinked to `../../.github/build.sh`
 - **Auto-Detection**: Script detects plugin from `Plugin Name:` header
-- **Production Build**: `./build.sh` creates `/build/extrachill-stream.zip` file only (unzip when directory access needed)
+- **Production Build**: `./build.sh` creates `/build/extrachill-stream.zip` file only.
 - **File Exclusions**: `.buildignore` excludes development files
 - **Composer Integration**: Development dependencies only
 
@@ -349,7 +349,7 @@ Future phases will need:
 
 ### Security Implementation
 - **Authentication**: `is_user_logged_in()` check on every request
-- **Member Validation**: `ec_get_user_artist_ids()` for artist membership
+- **Member Validation**: `is_user_member_of_blog()` against artist site (blog ID 4) for artist membership
 - **Output Escaping**: `esc_html()`, `esc_attr()`, `esc_url()` throughout
 - **Future**: Nonce verification for AJAX calls, stream key encryption
 
@@ -362,7 +362,7 @@ Future phases will need:
 - Confirm `extrachill_homepage_content` action runs on theme homepage
 
 ### 404 Error When Logged In
-- Verify user has artist profile via `ec_get_user_artist_ids()`
+- Verify user has artist platform membership via `is_user_member_of_blog()` against blog ID 4
 - Check authentication.php is loaded
 - Review template_redirect hook execution
 
@@ -374,7 +374,7 @@ Future phases will need:
 
 ### JavaScript Not Working
 - Check browser console for errors
-- Verify jQuery is loaded
+- Verify vanilla JavaScript module loaded correctly
 - Check ecStreamData is localized correctly
 - Verify stream.js file exists and is enqueued
 

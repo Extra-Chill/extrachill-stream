@@ -11,17 +11,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/**
- * Register REST API routes
- */
-function ec_stream_register_rest_routes() {
-	register_rest_route( 'extrachill-stream/v1', '/status', array(
-		'methods'  => 'GET',
-		'callback' => 'ec_stream_rest_get_status',
-		'permission_callback' => 'ec_stream_rest_permissions_check',
-	) );
-}
-add_action( 'rest_api_init', 'ec_stream_register_rest_routes' );
 
 /**
  * Check REST API permissions
@@ -34,9 +23,13 @@ function ec_stream_rest_permissions_check() {
 	}
 
 	$user_id = get_current_user_id();
+	$artist_blog_id = function_exists( 'ec_get_blog_id' ) ? ec_get_blog_id( 'artist' ) : null;
 
-	// Check if user is member of artist site
-	if ( ! is_user_member_of_blog( $user_id, 4 ) ) {
+	if ( ! $artist_blog_id ) {
+		return new WP_Error( 'rest_forbidden', 'Access denied.', array( 'status' => 403 ) );
+	}
+
+	if ( ! is_user_member_of_blog( $user_id, $artist_blog_id ) ) {
 		return new WP_Error( 'rest_forbidden', 'Access denied.', array( 'status' => 403 ) );
 	}
 

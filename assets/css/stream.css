@@ -53,7 +53,7 @@
 	gap: 8px;
 	padding: 8px 16px;
 	border-radius: 20px;
-	font-size: 14px;
+	font-size: var(--font-size-sm);
 	font-weight: 600;
 	background: var(--card-background);
 	color: var(--text-color);
@@ -125,13 +125,13 @@
 }
 
 .ec-stream-video-status {
-	font-size: 24px;
+	font-size: var(--font-size-xl);
 	font-weight: 600;
 	margin: 0 0 8px 0;
 }
 
 .ec-stream-video-hint {
-	font-size: 14px;
+	font-size: var(--font-size-sm);
 	margin: 0;
 	opacity: 0.7;
 }
@@ -139,7 +139,7 @@
 .ec-stream-video-stats {
 	display: flex;
 	gap: 16px;
-	font-size: 14px;
+	font-size: var(--font-size-sm);
 	color: var(--text-color);
 }
 
@@ -202,7 +202,7 @@
 .ec-stream-card-subtitle {
 	margin: 0 0 16px 0;
 	color: var(--muted-text);
-	font-size: 14px;
+	font-size: var(--font-size-sm);
 }
 
 /* Form Elements */
@@ -212,7 +212,7 @@
 
 .ec-stream-form-group label {
 	display: block;
-	font-size: 14px;
+	font-size: var(--font-size-sm);
 	font-weight: 600;
 	margin-bottom: 4px;
 	color: var(--text-color);
@@ -243,7 +243,7 @@
 .ec-stream-slider-labels {
 	display: flex;
 	justify-content: space-between;
-	font-size: 12px;
+	font-size: var(--font-size-xs);
 	color: var(--muted-text);
 	margin-top: 4px;
 }
@@ -282,7 +282,7 @@
 	align-items: center;
 	justify-content: center;
 	color: var(--text-color);
-	font-size: 24px;
+	font-size: var(--font-size-xl);
 }
 
 .ec-stream-platform-name {
@@ -291,7 +291,7 @@
 }
 
 .ec-stream-platform-status {
-	font-size: 12px;
+	font-size: var(--font-size-xs);
 	font-weight: 600;
 	padding: 4px 8px;
 	border-radius: 12px;
@@ -308,7 +308,7 @@
 
 .ec-stream-info-list li {
 	padding: 4px 0;
-	font-size: 14px;
+	font-size: var(--font-size-sm);
 	color: var(--text-color);
 }
 
@@ -319,7 +319,7 @@
 }
 
 .ec-stream-info-note {
-	font-size: 12px;
+	font-size: var(--font-size-xs);
 	color: var(--muted-text);
 	margin: 0;
 	padding: 8px;

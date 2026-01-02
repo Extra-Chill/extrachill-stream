@@ -139,7 +139,7 @@ extrachill-stream/
 
 ## Security (Phase 1)
 
-- **Member Validation**: `ec_get_user_artist_ids()` for artist membership verification
+- **Member Validation**: `is_user_member_of_blog()` against artist site (blog ID 4) for artist membership verification
 - **WordPress Authentication**: `is_user_logged_in()` check on all requests
 - **Output Escaping**: `esc_html()`, `esc_attr()`, `esc_url()` throughout templates
 - **Future Security**: RTMP key authentication, nonce verification, prepared statements
@@ -174,8 +174,9 @@ composer run test
 ```
 
 ### Build Output
-- `/build/extrachill-stream/` - Clean production directory
-- `/build/extrachill-stream.zip` - Deployment package
+- `/build/extrachill-stream.zip` - Deployment package (ZIP file only)
+
+Note: The intermediate `/build/extrachill-stream/` directory is temporary and removed during the build.
 
 ## Future Phases
 

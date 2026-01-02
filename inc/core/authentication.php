@@ -34,8 +34,9 @@ function ec_stream_require_artist_membership() {
 	}
 
 	$user_id = get_current_user_id();
+	$artist_blog_id = function_exists( 'ec_get_blog_id' ) ? ec_get_blog_id( 'artist' ) : null;
 
-	if ( ! is_user_member_of_blog( $user_id, 4 ) ) {
+	if ( ! $artist_blog_id || ! is_user_member_of_blog( $user_id, $artist_blog_id ) ) {
 		wp_die(
 			'<h1>404 Not Found</h1><p>The page you are looking for does not exist.</p>',
 			'404 Not Found',
