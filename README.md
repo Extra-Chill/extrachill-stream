@@ -64,13 +64,13 @@ This is intentional - we're building the visual framework first, then adding bac
 
 The sections below outline the planned architecture for full streaming support (not implemented yet).
 
-**Two-Server Infrastructure**:
-- **WordPress Server**: User interface, configuration management, billing
-- **nginx-rtmp VPS**: Video relay server handling multi-platform broadcasting
+**Unified Compute Infrastructure**:
+- **WordPress Server**: User interface, configuration management, billing (Cloudways)
+- **Extra Chill VPS**: Python/FastAPI compute infrastructure handling video transcoding, RTMP relay, and multi-platform broadcasting. This offloads resource-heavy tasks similar to the instagram-bot automation.
 
 **Communication Flow**:
 ```
-Artist (OBS) → RTMP stream → nginx-rtmp VPS → Multiple platforms
+Artist (OBS) → RTMP stream → Extra Chill VPS → Multiple platforms
                                      ↓
                             WordPress REST API
                                ↓         ↓

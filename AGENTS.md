@@ -2,7 +2,7 @@
 
 WordPress plugin providing live streaming platform for artist platform members. Currently in Phase 1: Non-functional UI phase with visual interface complete. Backend streaming integrations to be added platform-by-platform in future phases.
 
-This plugin is part of the Extra Chill Platform, a WordPress multisite network serving music communities across 10 active sites.
+This plugin is part of the Extra Chill Platform, a WordPress multisite network serving music communities across 11 active sites.
 
 ## Plugin Information
 
@@ -43,14 +43,14 @@ This is intentional - we're building the visual framework first, then adding bac
 ### Plugin Loading Pattern
 - **Procedural WordPress Pattern**: Uses direct `require_once` includes for all plugin functionality
 - **Site-Activated Plugin**: Activated only on stream.extrachill.com site
-- **Artist-Only Access**: Requires artist platform membership via `is_user_member_of_blog()` against blog ID 4 (artist.extrachill.com)
+- **Artist-Only Access**: Requires artist platform membership via `is_user_member_of_blog()` against artist site (blog ID `ec_get_blog_id( 'artist' )`)
 - **Homepage Rendering**: Outputs UI via `extrachill_homepage_content` action hook and disables sticky header with `add_filter( 'extrachill_enable_sticky_header', '__return_false' )`
 
 ### Core Features
 
 #### Authentication System (`inc/core/authentication.php`)
 - **404 for Non-Members**: Uses `wp_die()` with 404 status for unauthenticated access
-- **Artist Validation**: Uses WordPress core `is_user_member_of_blog()` against artist site (blog ID 4)
+- **Artist Validation**: Uses WordPress core `is_user_member_of_blog()` against artist site (blog ID `ec_get_blog_id( 'artist' )`)
 - **Early Hook**: `template_redirect` at priority 5 for immediate authentication check
 - **Network-Wide Access**: Any logged-in artist platform member from any multisite site can access
 
@@ -63,7 +63,7 @@ This is intentional - we're building the visual framework first, then adding bac
 - **Conditional Loading**: Assets load only on stream site pages (blog ID 8)
 - **Cache Busting**: `filemtime()` versioning for CSS/JS
 - **Vanilla JavaScript**: Single `stream.js` module with no jQuery dependency
-- **Localized Data**: Artist list pulled via `switch_to_blog( 4 )` and passed to JS via `wp_localize_script()`
+- **Localized Data**: Artist list pulled via `switch_to_blog( ec_get_blog_id( 'artist' ) )` and passed to JS via `wp_localize_script()`
 - **Camera Preview Support**: JavaScript receives artist context plus REST base URL/nonce for future integrations
 
 #### REST API Placeholder (`inc/core/rest-api.php`)
@@ -286,8 +286,9 @@ Will add backend functionality one platform at a time:
 - Instagram Live (requires mobile API)
 
 **Technical Requirements**:
-- VPS with RTMP server (Nginx RTMP or similar)
-- WebRTC for browser-based capture
+- Extra Chill VPS compute infrastructure (Python/FastAPI)
+- RTMP ingest service (integrated into VPS)
+- Video transcoding capabilities (CPU-intensive, offloaded to VPS)
 - Platform OAuth applications
 - Stream key encryption/storage
 - Bandwidth management
@@ -296,10 +297,10 @@ Will add backend functionality one platform at a time:
 ### Phase 3: Advanced Features
 
 After core streaming works:
-- Multi-bitrate streaming
+- Multi-bitrate streaming (transcoded on VPS)
 - Custom RTMP endpoints
 - Stream scheduling
-- Chat integration
+- Chat integration (aggregated via VPS)
 - Analytics dashboard
 - Stream recording/VOD
 - Clip creation
@@ -330,14 +331,12 @@ Each streaming platform requires:
 
 Building UI first lets us tackle these one at a time.
 
-### RTMP Server Requirements
+### VPS Compute Infrastructure
 
-Future phases will need:
-- Dedicated VPS or streaming server
-- Nginx with RTMP module (or alternatives like SRS, Node-Media-Server)
-- Sufficient bandwidth for multiple simultaneous streams
-- Stream transcoding capabilities
-- CDN integration for distribution
+Future phases utilize the **Extra Chill VPS** (Python/FastAPI) for all compute-heavy tasks:
+- **Offloading**: Similar to the "sketchy bots" (instagram-bot) in the `extrachill-vps` repo, streaming requires significant CPU for transcoding and bandwidth for multi-platform relay.
+- **Unified Architecture**: The VPS handles RTMP ingest, transcoding, and rebroadcasting, keeping the WordPress server focused on UI, authentication, and billing.
+- **Resource Management**: Video transcoding is the most resource-intensive task on the platform, necessitating the same offloading strategy used for browser automation.
 
 ## Development Standards
 
@@ -349,7 +348,7 @@ Future phases will need:
 
 ### Security Implementation
 - **Authentication**: `is_user_logged_in()` check on every request
-- **Member Validation**: `is_user_member_of_blog()` against artist site (blog ID 4) for artist membership
+- **Member Validation**: `is_user_member_of_blog()` against artist site (blog ID `ec_get_blog_id( 'artist' )`) for artist membership
 - **Output Escaping**: `esc_html()`, `esc_attr()`, `esc_url()` throughout
 - **Future**: Nonce verification for AJAX calls, stream key encryption
 
@@ -362,7 +361,7 @@ Future phases will need:
 - Confirm `extrachill_homepage_content` action runs on theme homepage
 
 ### 404 Error When Logged In
-- Verify user has artist platform membership via `is_user_member_of_blog()` against blog ID 4
+- Verify user has artist platform membership via `is_user_member_of_blog()` against blog ID `ec_get_blog_id( 'artist' )`
 - Check authentication.php is loaded
 - Review template_redirect hook execution
 

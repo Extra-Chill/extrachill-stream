@@ -3,7 +3,7 @@
 **Status**: Planning Phase - Comprehensive Implementation Plan
 **Current State**: Phase 1 Complete (Non-functional UI only)
 **Target Site**: stream.extrachill.com (site #8 in multisite network)
-**Architecture**: WordPress UI + nginx-rtmp VPS relay + HTTP client standardization
+**Architecture**: WordPress UI + Extra Chill VPS (Python/FastAPI) Compute Infrastructure
 **Monetization**: Metered billing (pay-per-minute streaming via shop.extrachill.com WooCommerce)
 
 **CURRENT DELIVERY (Phase 1)**
@@ -19,19 +19,19 @@
 
 ## Project Overview
 
-ExtraChill Stream enables artists on the Extra Chill Platform to broadcast live video streams simultaneously to multiple platforms (YouTube, Twitch, Facebook, Instagram, etc.) through a single RTMP endpoint. WordPress provides the user interface, configuration management, and metered billing system, while a separate VPS running nginx-rtmp-module handles the actual video relay.
+ExtraChill Stream enables artists on the Extra Chill Platform to broadcast live video streams simultaneously to multiple platforms (YouTube, Twitch, Facebook, Instagram, etc.) through a single RTMP endpoint. WordPress provides the user interface, configuration management, and metered billing system, while the **Extra Chill VPS** (Python-based compute infrastructure) handles the video relay, transcoding, and automation.
 
 ### Core Value Proposition
 
 - **Multi-Platform Broadcasting**: Stream to unlimited destinations simultaneously
 - **Artist Platform Integration**: Seamless integration with existing artist profiles and authentication
 - **Metered Billing**: Fair pay-per-minute pricing with wallet system
-- **Zero Storage**: Pure video relay with no data persistence (event documentation only)
+- **Compute Offloading**: Offloads CPU-intensive transcoding and high-bandwidth relay to dedicated VPS
 - **Bootstrapped Infrastructure**: No external streaming services, full control
 
 ## Technical Architecture
 
-### Two-Server Infrastructure
+### Unified Compute Infrastructure
 
 #### Server 1: WordPress (Cloudways - Existing)
 **Responsibilities**:
@@ -39,21 +39,22 @@ ExtraChill Stream enables artists on the Extra Chill Platform to broadcast live 
 - Stream configuration management
 - RTMP stream key generation
 - Destination platform settings (YouTube keys, Twitch keys, etc.)
-- nginx-rtmp configuration file generation
 - Metered billing and payment processing
 - Stream event documentation (Livestreams CPT)
 - Artist platform integration
 - Real-time stream status display
 
-#### Server 2: Streaming VPS (New - DigitalOcean/Linode)
+#### Server 2: Extra Chill VPS (New - DigitalOcean/Linode)
 **Responsibilities**:
 - Receive RTMP streams from artists (port 1935)
+- **Video Transcoding**: CPU-intensive task offloaded from WordPress
 - Simultaneously rebroadcast to multiple platforms
 - Execute WordPress REST API callbacks on stream events
+- Python-based automation and platform integrations (similar to instagram-bot)
 - Zero video data storage (pure passthrough)
-- nginx-rtmp-module handles all video processing
 
 **VPS Specifications**:
+- **Resource Intensive**: Streaming requires similar offloading to "sketchy bots" (instagram-bot) due to high compute and bandwidth needs.
 - **Light Usage** (1-2 concurrent streams): $5-6/month - 1 vCPU, 1GB RAM
 - **Medium Usage** (5-10 concurrent streams): $12/month - 2 vCPU, 2GB RAM
 - **Heavy Usage** (20+ concurrent streams): $24-40/month - 4 vCPU, 4GB RAM
@@ -61,13 +62,13 @@ ExtraChill Stream enables artists on the Extra Chill Platform to broadcast live 
 ### Communication Flow
 
 ```
-Artist (OBS) → RTMP stream → nginx-rtmp VPS → Multiple platforms
-                                    ↓
-                           WordPress REST API
-                              ↓         ↓
-                         Start Event  Stop Event
-                              ↓         ↓
-                      Create Session  Calculate Cost
+Artist (OBS) → RTMP stream → Extra Chill VPS → Multiple platforms
+                                     ↓
+                            WordPress REST API
+                               ↓         ↓
+                          Start Event  Stop Event
+                               ↓         ↓
+                       Create Session  Calculate Cost
 ```
 
 ### Data Flow Pattern
@@ -113,6 +114,7 @@ extrachill-stream/
 ├── AGENTS.md                       # Implementation documentation
 └── plan.md                         # This planning document
 ```
+
 
 ### HTTP Client Architecture
 
@@ -260,126 +262,24 @@ _ec_stream_total_minutes    // Lifetime streaming minutes
 _ec_stream_total_spent      // Lifetime spending in dollars
 ```
 
-## nginx-rtmp Configuration
+## VPS Infrastructure Management
 
-### VPS Setup Requirements
+### API-Driven Configuration
 
-**Operating System**: Ubuntu 22.04 LTS
-**Software Stack**:
-- nginx with nginx-rtmp-module
-- PHP 8.1+ (for config deployment script)
-- SSH server with key authentication
+Unlike the previous SSH-based approach, the **Extra Chill VPS** (FastAPI) provides REST endpoints for managing stream configurations. WordPress no longer needs SSH access; instead, it communicates via the `extrachill-api` proxy.
 
-**Installation Steps**:
-```bash
-# Install nginx with RTMP module
-sudo apt update
-sudo apt install -y nginx libnginx-mod-rtmp
+**Configuration Flow**:
+1. User saves destinations in WordPress dashboard.
+2. WordPress sends a POST request to the VPS API via `extrachill-api`.
+3. The VPS (Python) updates the RTMP relay configuration (e.g., dynamically adjusting FFmpeg processes or RTMP mount points).
+4. VPS returns confirmation to WordPress.
 
-# Verify RTMP module loaded
-nginx -V 2>&1 | grep rtmp
+**Benefits**:
+- **Security**: No SSH keys required on the WordPress server.
+- **Abstraction**: WordPress doesn't need to know the underlying RTMP implementation (nginx-rtmp, SRS, or FFmpeg).
+- **Real-time Control**: VPS can instantly start/stop relays based on API calls.
 
-# Create config directory
-sudo mkdir -p /etc/nginx/rtmp-streams
-
-# Set permissions for WordPress config deployment
-sudo chown www-data:www-data /etc/nginx/rtmp-streams
-```
-
-### Dynamic nginx Configuration
-
-**Generated by WordPress** (`inc/nginx-config/config-generator.php`):
-
-```nginx
-# /etc/nginx/nginx.conf (RTMP block added)
-rtmp {
-    server {
-        listen 1935;
-        chunk_size 4096;
-
-        # ExtraChill Stream Application
-        application live {
-            live on;
-            record off;  # CRITICAL: Zero data storage
-
-            # WordPress callbacks (REST API endpoints)
-            on_publish http://stream.extrachill.com/wp-json/extrachill/v1/stream/start;
-            on_publish_done http://stream.extrachill.com/wp-json/extrachill/v1/stream/stop;
-            on_update http://stream.extrachill.com/wp-json/extrachill/v1/stream/heartbeat;
-
-            # Authentication callback
-            on_play http://stream.extrachill.com/wp-json/extrachill/v1/stream/auth;
-
-            # Multi-platform destinations (dynamically generated per user)
-            # Example for user with stream key abc123:
-            push rtmp://a.rtmp.youtube.com/live2/USER_YOUTUBE_KEY;
-            push rtmp://live.twitch.tv/app/USER_TWITCH_KEY;
-            push rtmp://live-api-s.facebook.com:80/rtmp/USER_FACEBOOK_KEY;
-            # ... additional platforms as configured
-        }
-    }
-}
-```
-
-**Per-User Configuration Pattern**:
-```nginx
-# WordPress generates individual config files
-# /etc/nginx/rtmp-streams/{stream_key}.conf
-
-# Included in main rtmp block via:
-include /etc/nginx/rtmp-streams/*.conf;
-
-# Example: /etc/nginx/rtmp-streams/abc123xyz.conf
-application live_abc123xyz {
-    live on;
-    record off;
-
-    on_publish http://stream.extrachill.com/wp-json/extrachill/v1/stream/start?key=abc123xyz;
-    on_publish_done http://stream.extrachill.com/wp-json/extrachill/v1/stream/stop?key=abc123xyz;
-
-    push rtmp://a.rtmp.youtube.com/live2/YOUTUBE_KEY_FOR_USER;
-    push rtmp://live.twitch.tv/app/TWITCH_KEY_FOR_USER;
-}
-```
-
-### Configuration Deployment Flow
-
-1. User saves destinations in WordPress dashboard
-2. WordPress generates nginx config file for user's stream key
-3. WordPress deploys config to VPS via SSH/SFTP
-4. WordPress triggers `nginx -s reload` via SSH command
-5. nginx reloads configuration without dropping active streams
-6. User's new destinations immediately available for next stream
-
-**SSH Deployment** (`inc/nginx-config/config-deploy.php`):
-```php
-function ec_stream_deploy_nginx_config( $stream_key, $config_content ) {
-    $ssh_host = get_option( 'ec_stream_vps_host' );
-    $ssh_user = get_option( 'ec_stream_vps_user' );
-    $ssh_key  = get_option( 'ec_stream_vps_private_key' );
-
-    // Use phpseclib for SSH connection
-    $ssh = new \phpseclib3\Net\SSH2( $ssh_host );
-    $key = \phpseclib3\Crypt\PublicKeyLoader::load( $ssh_key );
-
-    if ( ! $ssh->login( $ssh_user, $key ) ) {
-        return new WP_Error( 'ssh_auth_failed', 'SSH authentication failed' );
-    }
-
-    // Write config file
-    $remote_path = "/etc/nginx/rtmp-streams/{$stream_key}.conf";
-    $ssh->exec( "echo " . escapeshellarg( $config_content ) . " > {$remote_path}" );
-
-    // Reload nginx
-    $ssh->exec( 'sudo nginx -t && sudo nginx -s reload' );
-
-    return true;
-}
-```
-
-## Stream Key Management
-
-### Key Generation
+### Stream Key Management
 
 **Format**: `ec_live_{user_id}_{random_hash}`
 **Example**: `ec_live_42_a7f3e9d2c1b8`
@@ -1185,9 +1085,8 @@ function ec_stream_is_user_live( $user_id ) {
 
 **1. VPS Connection**
 ```
-VPS Hostname: [stream-vps.extrachill.com      ]
-SSH Username: [www-data                        ]
-SSH Private Key: [textarea for private key     ]
+VPS Hostname: [vps.extrachill.com              ]
+Internal Auth Key: [password field             ]
 [Test VPS Connection]
 ```
 
@@ -1507,11 +1406,11 @@ Response: { balance: 47.70, formatted: "$47.70", minutes: 477 }
 - [ ] HTTP client implementation
 
 **Week 2+: VPS & Backend (Future)**
-- [ ] nginx-rtmp VPS setup and configuration
-- [ ] Basic nginx config generator
-- [ ] SSH deployment system (phpseclib)
-- [ ] REST API endpoints (stream start/stop)
-- [ ] nginx callback testing
+- [ ] Extra Chill VPS streaming service setup
+- [ ] Python-based RTMP ingest handler
+- [ ] FFmpeg transcoding pipeline
+- [ ] REST API endpoints (stream start/stop callbacks)
+- [ ] VPS API integration (destination management)
 - [ ] Dashboard templates/widgets beyond current homepage UI
 
 ### Phase 2: Billing System (Weeks 4-5)
