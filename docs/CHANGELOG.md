@@ -32,10 +32,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Stream interface template updated to render as homepage content without header/footer
 
 ### Documentation
-- Renamed CLAUDE.md to AGENTS.md for comprehensive plugin documentation
-- Updated all documentation references to use AGENTS.md
+- Renamed AGENTS.md to CLAUDE.md for plugin documentation
+- Updated all documentation references to use CLAUDE.md
 - Aligned version numbers across documentation files
-- Realigned AGENTS.md and README.md to describe current Phase 1 UI-only implementation
+- Realigned CLAUDE.md and README.md to describe current Phase 1 UI-only implementation
 
 ### Dependencies
 - Updated composer dependencies to latest versions

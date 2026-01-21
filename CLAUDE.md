@@ -91,10 +91,9 @@ extrachill-stream/
 ├── docs/
 │   └── CHANGELOG.md
 ├── plan.md
-├── build.sh -> ../../.github/build.sh  # Symlink to universal build script
 ├── .buildignore                   # Build exclusion patterns
 ├── composer.json                  # Dev dependencies
-└── AGENTS.md                      # This documentation
+└── CLAUDE.md                      # This documentation
 ```
 
 ## Streaming Interface UI & JavaScript
@@ -200,9 +199,8 @@ state: {
 
 ## Build System
 
-- **Universal Build Script**: Symlinked to `../../.github/build.sh`
-- **Auto-Detection**: Script detects plugin from `Plugin Name:` header
-- **Production Build**: `./build.sh` creates `/build/extrachill-stream.zip` file only.
+- **Build System**: Use `homeboy build extrachill-stream` for production builds
+- **Production Build**: Creates `/build/extrachill-stream.zip` file only
 - **File Exclusions**: `.buildignore` excludes development files
 - **Composer Integration**: Development dependencies only
 
@@ -251,16 +249,16 @@ state: {
 composer install
 
 # Create production build
-./build.sh
+homeboy build extrachill-stream
 
 # Run PHP linting
-composer run lint:php
+homeboy lint extrachill-stream
 
 # Fix PHP coding standards
-composer run lint:fix
+homeboy lint extrachill-stream --fix
 
 # Run tests
-composer run test
+homeboy test extrachill-stream
 ```
 
 ## Future Phases

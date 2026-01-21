@@ -33,7 +33,7 @@ ExtraChill Stream enables artists on the Extra Chill Platform to broadcast live 
 
 ### Unified Compute Infrastructure
 
-#### Server 1: WordPress (Cloudways - Existing)
+#### Server 1: WordPress multisite (existing hosting)
 **Responsibilities**:
 - User interface and dashboard
 - Stream configuration management
@@ -111,7 +111,7 @@ extrachill-stream/
 ├── build.sh -> ../../.github/build.sh  # Symlink to universal build script
 ├── .buildignore                    # Build exclusions
 ├── composer.json                   # Dev dependencies only
-├── AGENTS.md                       # Implementation documentation
+├── CLAUDE.md                       # Implementation documentation
 └── plan.md                         # This planning document
 ```
 
@@ -866,7 +866,7 @@ function ec_stream_ajax_save_destinations() {
         'message' => 'Destinations saved successfully',
     ) );
 }
-add_action( 'wp_ajax_ec_stream_save_destinations', 'ec_stream_ajax_save_destinations' );
+(Legacy note) Previously considered `wp_ajax_*` handlers for saving destinations; current platform direction is REST-only via `extrachill-api`.
 ```
 
 ## Dashboard Interface
@@ -1686,7 +1686,7 @@ Response: { balance: 47.70, formatted: "$47.70", minutes: 477 }
 - **Troubleshooting**: Common issues and solutions
 
 ### Developer Documentation
-- **AGENTS.md**: Comprehensive plugin architecture documentation
+- **CLAUDE.md**: Comprehensive plugin architecture documentation
 - **API Documentation**: REST API endpoints with request/response examples
 - **Database Schema**: Table structures and relationships
 - **Integration Guide**: How to integrate streaming with other plugins

@@ -1,27 +1,17 @@
 # Streaming Platform
 
 ## Overview
-Live streaming platform for artist members on stream.extrachill.com (Blog ID 8). Currently in Phase 1 UI prototype with backend integrations offloaded to the **Extra Chill VPS** compute infrastructure.
-
-## Architecture
-The platform utilizes a **WordPress UI + Python Compute** architecture:
-- **WordPress**: Handles user interface, member authentication, and metered billing.
-- **Extra Chill VPS**: Dedicated compute infrastructure (Python/FastAPI) that handles CPU-intensive video transcoding and high-bandwidth multi-platform relay. This offloading strategy is shared with the instagram-bot automation to preserve WordPress performance.
+Live streaming platform for artist members on stream.extrachill.com (Blog ID 8). The plugin currently provides a Phase 1 UI prototype and access control.
 
 ## Current Implementation
-- Homepage template override using `extrachill_template_homepage` filter
-- UI scaffolding for streaming dashboard
-- Artist member access control framework
-- Roadmap for integration with Extra Chill VPS compute services
+- Homepage content renders via the theme action hook `extrachill_homepage_content`.
+- UI scaffolding for a streaming dashboard.
+- Artist-only access control runs during `template_redirect` using multisite membership (artist site membership) and returns a 404 for non-members.
+- Minimal REST endpoints exist in `inc/core/rest-api.php` (Phase 1 scaffolding; not a full streaming pipeline).
 
 ## Future Features
-- **VPS-Driven Ingestion**: RTMP ingest service on Extra Chill VPS
-- **Transcoding Offloading**: Real-time transcoding for multi-platform broadcasting
-- **Member Access Control**: Integrated with artist platform data
-- **Metered Billing**: Pay-per-minute streaming tracked via VPS callbacks to WordPress
+This plugin is intended to evolve into a WordPress UI that can integrate with external streaming infrastructure (ingest, relay/transcoding, billing callbacks). Those systems are not implemented in this plugin yet.
 
 ## Integration
 - Shares multisite authentication
-- Leverages theme template system
-- Offloads resource-heavy tasks to Extra Chill VPS
-- Follows platform architectural patterns for compute offloading
+- Uses the ExtraChill theme homepage hook and template shell
